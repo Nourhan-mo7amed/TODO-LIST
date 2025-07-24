@@ -5,7 +5,11 @@ class TaskDetailScreen extends StatefulWidget {
   final int taskId;
   final String taskTitle;
 
-  const TaskDetailScreen({required this.taskId, required this.taskTitle});
+  const TaskDetailScreen({
+    super.key,
+    required this.taskId,
+    required this.taskTitle,
+  });
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -39,26 +43,40 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF1F3F6),
+        backgroundColor: const Color(0xFFF8F9FB),
         appBar: AppBar(
-          backgroundColor: Colors.deepPurpleAccent,
+          backgroundColor: Colors.indigoAccent,
+          elevation: 3,
           title: Text(
             widget.taskTitle,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 0.5,
+            ),
           ),
           iconTheme: const IconThemeData(color: Colors.white),
-          elevation: 4,
         ),
         body: FutureBuilder<List<Map<String, dynamic>>>(
           future: getSubTasks(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
             final subtasks = snapshot.data!;
-            if (subtasks.isEmpty) return const Center(child: Text("No subtasks yet"));
+            if (subtasks.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No subtasks yet",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            }
 
             return ListView.builder(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               itemCount: subtasks.length,
               itemBuilder: (context, index) {
                 final sub = subtasks[index];
@@ -66,38 +84,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Row(
-                      children: [
-                        // ✔️ Checkbox على الشمال
-                        Checkbox(
-                          activeColor: Colors.deepPurpleAccent,
-                          value: isDone,
-                          onChanged: (val) => toggleDone(sub['id'], isDone),
-                        ),
-
-                        // نص التاسك
-                        Expanded(
-                          child: Text(
-                            sub['content'],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: isDone ? Colors.grey : Colors.black87,
-                              decoration: isDone ? TextDecoration.lineThrough : null,
-                            ),
-                          ),
-                        ),
-
-                        // 🗑️ زر الحذف
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                          onPressed: () => deleteSubTask(sub['id']),
-                        ),
-                      ],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 2.5,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    leading: Checkbox(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      activeColor: Colors.indigoAccent,
+                      value: isDone,
+                      onChanged: (val) => toggleDone(sub['id'], isDone),
+                    ),
+                    title: Text(
+                      sub['content'],
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: isDone ? Colors.grey : Colors.black87,
+                        decoration: isDone ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      color: Colors.redAccent,
+                      onPressed: () => deleteSubTask(sub['id']),
                     ),
                   ),
                 );

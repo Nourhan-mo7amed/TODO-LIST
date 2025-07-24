@@ -6,7 +6,7 @@ class AddTaskBottomSheet extends StatefulWidget {
   final Function refreshTasks;
 
   const AddTaskBottomSheet({Key? key, required this.refreshTasks})
-    : super(key: key);
+      : super(key: key);
 
   @override
   _AddTaskBottomSheetState createState() => _AddTaskBottomSheetState();
@@ -19,6 +19,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   List<TextEditingController> subtaskControllers = [];
 
   final Sqldb db = Sqldb();
+  Color selectedColor = Colors.indigo;
 
   @override
   void initState() {
@@ -53,6 +54,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     final mainTaskId = await db.insertMainTask(
       titleController.text.trim(),
       selectedDate?.toString().split(" ")[0],
+      selectedColor.value.toRadixString(16), // حفظ اللون
     );
 
     for (var controller in subtaskControllers) {
@@ -155,6 +157,40 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       ],
                     ),
                   ),
+                ),
+
+                SizedBox(height: 20),
+
+                // Color Picker
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Select Color",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+                SizedBox(height: 10),
+                Wrap(
+                  spacing: 10,
+                  children: [
+                    Colors.indigo,
+                    Colors.red,
+                    Colors.green,
+                    Colors.orange,
+                    Colors.purple,
+                    Colors.teal,
+                    Colors.blueGrey,
+                  ].map((color) {
+                    return GestureDetector(
+                      onTap: () => setState(() => selectedColor = color),
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: color,
+                        child: selectedColor == color
+                            ? Icon(Icons.check, color: Colors.white)
+                            : null,
+                      ),
+                    );
+                  }).toList(),
                 ),
 
                 SizedBox(height: 25),
