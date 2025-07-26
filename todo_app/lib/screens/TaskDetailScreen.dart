@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Sqldb.dart';
+import 'package:todo_app/data/sqldb.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final int taskId;

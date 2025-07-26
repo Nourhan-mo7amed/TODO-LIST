@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/Sqldb.dart'; // ← مهم
+import 'package:todo_app/data/Sqldb.dart'; // ← مهم
 import 'package:todo_app/screens/SplashScreen.dart';
 
 void main() async {

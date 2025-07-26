@@ -15,7 +15,7 @@ class Sqldb {
     String path = p.join(await getDatabasesPath(), 'TODO.db');
     return openDatabase(
       path,
-      version: 3,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -27,7 +27,8 @@ class Sqldb {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       dueDate TEXT,
-      color TEXT
+      color TEXT,
+      is_favorite INTEGER DEFAULT 0
     )
   ''');
 
@@ -43,7 +44,11 @@ class Sqldb {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // لا حاجة لتعديل هنا الآن بعد التوحيد
+    // if (oldVersion < 4) {
+    //   await db.execute(
+    //     "ALTER TABLE main_tasks ADD COLUMN is_favorite INTEGER DEFAULT 0",
+    //   );
+    // }
   }
 
   Future<void> deleteDatabaseFile() async {
@@ -73,6 +78,7 @@ class Sqldb {
       "title": title,
       "dueDate": dueDate,
       "color": color,
+      "is_favorite": 0,
     });
   }
 
@@ -80,6 +86,16 @@ class Sqldb {
     Database? mydb = await db;
     await mydb!.delete("sub_tasks", where: "task_id = ?", whereArgs: [id]);
     return await mydb.delete("main_tasks", where: "id = ?", whereArgs: [id]);
+  }
+
+  Future<int> toggleFavorite(int taskId, bool isFav) async {
+    Database? mydb = await db;
+    return await mydb!.update(
+      "main_tasks",
+      {"is_favorite": isFav ? 1 : 0},
+      where: "id = ?",
+      whereArgs: [taskId],
+    );
   }
 
   // ====================

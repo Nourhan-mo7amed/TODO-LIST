@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../Sqldb.dart';
+import '../data/Sqldb.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   final Function refreshTasks;
@@ -19,7 +19,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   List<TextEditingController> subtaskControllers = [];
 
   final Sqldb db = Sqldb();
-  Color selectedColor = Colors.indigo;
+  Color selectedColor = Color(0xFF5A189A); // Default color
 
   @override
   void initState() {
@@ -92,7 +92,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo,
+                    color: Color(0xFF5A189A),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -149,7 +149,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       children: [
                         Icon(
                           Icons.calendar_today,
-                          color: Colors.indigo,
+                          color: Color(0xFF5A189A),
                           size: 28,
                         ),
                         SizedBox(width: 12),
@@ -267,10 +267,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
                     onPressed: addSubtaskField,
-                    icon: Icon(Icons.add, color: Colors.indigo),
+                    icon: Icon(Icons.add, color: Color(0xFF5A189A)),
                     label: Text(
                       "Add Subtask",
-                      style: TextStyle(color: Colors.indigo),
+                      style: TextStyle(color: Color(0xFF5A189A)),
                     ),
                   ),
                 ),
@@ -291,7 +291,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     ElevatedButton(
                       onPressed: saveTask,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,
+                        backgroundColor: Color(0xFF5A189A),
                         padding: EdgeInsets.symmetric(
                           horizontal: 25,
                           vertical: 12,

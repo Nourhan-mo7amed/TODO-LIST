@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/screens/Add_Notes.dart';
 import 'package:todo_app/screens/TaskDetailScreen.dart'; // تأكد إنه موجود
 
-import '../Sqldb.dart';
+import '../data/Sqldb.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -190,6 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
+                              if (task['is_favorite'] == 1)
+                                Icon(Icons.favorite, color: Colors.pinkAccent),
                               PopupMenuButton<String>(
                                 onSelected: (val) async {
                                   if (val == 'delete') {
@@ -209,6 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onSubTaskAdded: _refreshTasks,
                                       ),
                                     );
+                                  } else if (val == 'toggle_fav') {
+                                    final isCurrentlyFav =
+                                        task['is_favorite'] == 1;
+                                    await db.toggleFavorite(
+                                      task['id'],
+                                      !isCurrentlyFav,
+                                    );
+                                    _refreshTasks();
                                   }
                                 },
                                 icon: Icon(
@@ -221,10 +231,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 itemBuilder: (context) => [
                                   PopupMenuItem(
+                                    value: 'toggle_fav',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          task['is_favorite'] == 1
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          color: Colors.pink,
+                                        ),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          task['is_favorite'] == 1
+                                              ? 'Unfavorite'
+                                              : 'Favorite',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  PopupMenuItem(
                                     value: 'add_item',
                                     child: Row(
                                       children: [
-                                        Icon(Icons.add, color: Colors.indigo),
+                                        Icon(Icons.add, color: Color(0xFF5A189A)),
                                         SizedBox(width: 10),
                                         Text(
                                           'Add Item',
@@ -328,7 +359,11 @@ class _AddSubTaskSheet extends State<AddSubTaskBottomSheet> {
         children: [
           const Text(
             'Add Subtask',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF5A189A),
+            ),
           ),
           const SizedBox(height: 10),
           TextField(
