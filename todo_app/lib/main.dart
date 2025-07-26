@@ -1,18 +1,24 @@
-import 'dart:core';
 import 'package:flutter/material.dart';
-
-import 'screens/HomeScreen.dart';
+import 'package:todo_app/Sqldb.dart'; // ← مهم
+import 'package:todo_app/screens/SplashScreen.dart';
 
 void main() async {
-  runApp(TaskerApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final db = Sqldb();
+  //await db.deleteDatabaseFile(); // 🧨 امسحيها بعد أول تشغيل
+
+  runApp(MyApp());
 }
 
-class TaskerApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      title: 'ToDo App',
+      // theme: ThemeData.dark(),
+      home: SplashScreen(),
     );
   }
 }

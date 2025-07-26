@@ -6,7 +6,7 @@ class AddTaskBottomSheet extends StatefulWidget {
   final Function refreshTasks;
 
   const AddTaskBottomSheet({Key? key, required this.refreshTasks})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _AddTaskBottomSheetState createState() => _AddTaskBottomSheetState();
@@ -100,8 +100,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 // Task Title
                 TextFormField(
                   controller: titleController,
+                  style: TextStyle(color: Colors.black), // ← لون الكتابة أسود
                   decoration: InputDecoration(
                     hintText: "Task title...",
+                    hintStyle: TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey[100],
                     border: OutlineInputBorder(
@@ -113,9 +115,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       vertical: 14,
                     ),
                   ),
-                  validator: (value) => (value == null || value.trim().isEmpty)
-                      ? 'Title is required'
-                      : null,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Title is required';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 15),
 
@@ -152,7 +157,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                           selectedDate == null
                               ? "Select due date"
                               : "${selectedDate!.toLocal()}".split(' ')[0],
-                          style: TextStyle(fontSize: 18),
+                          // style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ],
                     ),
@@ -164,33 +169,39 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 // Color Picker
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Select Color",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    "Select Color",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      //color: Colors.black,
+                    ),
+                  ),
                 ),
                 SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
-                  children: [
-                    Colors.indigo,
-                    Colors.red,
-                    Colors.green,
-                    Colors.orange,
-                    Colors.purple,
-                    Colors.teal,
-                    Colors.blueGrey,
-                  ].map((color) {
-                    return GestureDetector(
-                      onTap: () => setState(() => selectedColor = color),
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: color,
-                        child: selectedColor == color
-                            ? Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
-                    );
-                  }).toList(),
+                  children:
+                      [
+                        Colors.indigo,
+                        Colors.red,
+                        Colors.green,
+                        Colors.orange,
+                        Colors.purple,
+                        Colors.teal,
+                        Colors.blueGrey,
+                      ].map((color) {
+                        return GestureDetector(
+                          onTap: () => setState(() => selectedColor = color),
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundColor: color,
+                            child: selectedColor == color
+                                ? Icon(Icons.check, color: Colors.white)
+                                : null,
+                          ),
+                        );
+                      }).toList(),
                 ),
 
                 SizedBox(height: 25),
@@ -200,37 +211,53 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Subtasks",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 ...List.generate(subtaskControllers.length, (index) {
-                  return Row(
+                  return Column(
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: subtaskControllers[index],
-                          decoration: InputDecoration(
-                            hintText: "Subtask ${index + 1}",
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 14,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: subtaskControllers[index],
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                hintText: "Subtask ${index + 1}",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 14,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          SizedBox(width: 8),
+                          if (subtaskControllers.length > 1)
+                            IconButton(
+                              icon: Icon(
+                                Icons.remove_circle,
+                                color: Colors.red,
+                              ),
+                              onPressed: () => removeSubtaskField(index),
+                            ),
+                        ],
                       ),
-                      SizedBox(width: 8),
-                      if (subtaskControllers.length > 1)
-                        IconButton(
-                          icon: Icon(Icons.remove_circle, color: Colors.red),
-                          onPressed: () => removeSubtaskField(index),
-                        ),
+                      SizedBox(
+                        height: 8,
+                      ), // ← هنا المسافة بين كل ساب تاسك والتاني
                     ],
                   );
                 }),

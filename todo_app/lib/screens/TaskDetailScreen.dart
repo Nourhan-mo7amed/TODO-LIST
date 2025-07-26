@@ -43,9 +43,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FB),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
-          backgroundColor: Colors.indigoAccent,
+          backgroundColor: Color(0xFF5A189A),
           elevation: 3,
           title: Text(
             widget.taskTitle,

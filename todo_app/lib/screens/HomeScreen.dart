@@ -11,11 +11,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Sqldb db = Sqldb();
+  bool isSearching = false;
+  TextEditingController _searchController = TextEditingController();
+  String searchText = '';
 
   @override
   void initState() {
     super.initState();
-    //Sqldb().deleteDatabaseFile(); // 🧨 احذفيها بعد أول تشغيل
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose(); // مهم علشان نمنع تسريب في الذاكرة
+    super.dispose();
   }
 
   Future<List<Map<String, dynamic>>> getMainTasks() async {
@@ -41,19 +49,60 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF88A2A2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF88A2A2),
-        leading: Icon(Icons.menu, color: Colors.white),
-        title: Text('ToDo', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: isSearching
+            ? TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value.toLowerCase();
+                  });
+                },
+                autofocus: true,
+                style: TextStyle(color: Colors.black, fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'Search tasks...',
+                  hintStyle: TextStyle(color: Colors.black26),
+                  border: InputBorder.none,
+                ),
+              )
+            : Text(
+                'ToDo App',
+                style: TextStyle(
+                  fontSize: 26,
+                  color: Color(0xFF5A189A), // بنفسجي غامق جذاب (ممكن تغيريه)
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 4,
+                      color: Colors.black26,
+                      offset: Offset(1, 2),
+                    ),
+                  ],
+                ),
+              ),
         actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.search, color: Colors.white),
+          IconButton(
+            icon: Icon(
+              isSearching ? Icons.close : Icons.search,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              setState(() {
+                if (isSearching) {
+                  _searchController.clear();
+                  searchText = "";
+                }
+                isSearching = !isSearching;
+              });
+            },
           ),
         ],
+        centerTitle: true,
       ),
       body: FutureBuilder(
         future: getMainTasks(),
@@ -61,12 +110,17 @@ class _HomeScreenState extends State<HomeScreen> {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
 
-          final mainTasks = snapshot.data!;
+          final allTasks = snapshot.data!;
+          final mainTasks = allTasks.where((task) {
+            final title = (task['title'] ?? '').toLowerCase();
+            return title.contains(searchText);
+          }).toList();
+
           if (mainTasks.isEmpty) {
             return Center(
               child: Text(
                 "No tasks yet",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: Colors.black26, fontSize: 18),
               ),
             );
           }
@@ -106,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                         color: Color(
                           int.parse(task['color'] ?? 'FF2196F3', radix: 16),
-                        ).withOpacity(0.3),
+                        ).withOpacity(0.4),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: Color(
@@ -130,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   task['title'],
                                   style: TextStyle(
+                                    color: Colors.black,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -231,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Color(0xFF5A189A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
@@ -292,7 +347,7 @@ class _AddSubTaskSheet extends State<AddSubTaskBottomSheet> {
           ElevatedButton(
             onPressed: isLoading ? null : _addSubTask,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.indigo,
+              backgroundColor: Color(0xFF5A189A), // بنفسجي جذاب
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
